@@ -1048,7 +1048,7 @@ u-boot.ldr:	u-boot
 # binman
 # ---------------------------------------------------------------------------
 quiet_cmd_binman = BINMAN  $@
-cmd_binman = $(srctree)/tools/binman/binman -d u-boot.dtb -O . \
+cmd_binman = $(srctree)/tools/binman/binman -D -d u-boot.dtb -O . \
 		-I . -I $(srctree)/board/$(BOARDDIR) $<
 
 OBJCOPYFLAGS_u-boot.ldr.hex := -I binary -O ihex
