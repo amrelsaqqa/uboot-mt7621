@@ -89,7 +89,7 @@ jobs:
       - name: Install essential packages
         run: |
           sudo apt-get update
-          sudo apt-get install swig python-dev
+          sudo apt-get install swig python-dev-is-python3
          
 
       - name: Download OpenWrt toolchain
