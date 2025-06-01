@@ -7,10 +7,7 @@ on:
         description: 'Flash Type'
         required: true
         type: choice
-        options:
-        - 'NOR'
-        - 'NAND'
-        - 'NAND-NMBM'
+        options: ['NOR', 'NAND', 'NAND-NMBM']
       mtdparts:
         description: 'MTD Partition Table'
         required: true
@@ -35,64 +32,60 @@ on:
         description: 'CPU Frequency (400 - 1200)'
         required: true
         type: number
-        default: '880'
+        default: 880
       ramfreq:
         description: 'DRAM Frequency'
         required: true
         type: choice
-        options:
-        - '400'
-        - '800'
-        - '1066'
-        - '1200'
+        options: ['400', '800', '1066', '1200']
         default: '800'
       ddrparam:
         description: 'Prefered DDR Init Parameters'
         required: true
         type: choice
         options:
-        - 'DDR2-64MiB'
-        - 'DDR2-128MiB'
-        - 'DDR2-W9751G6KB-64MiB-1066MHz'
-        - 'DDR2-W971GG6KB25-128MiB-800MHz'
-        - 'DDR2-W971GG6KB18-128MiB-1066MHz'
-        - 'DDR3-128MiB'
-        - 'DDR3-256MiB'
-        - 'DDR3-512MiB'
-        - 'DDR3-128MiB-KGD'
+          - 'DDR2-64MiB'
+          - 'DDR2-128MiB'
+          - 'DDR2-W9751G6KB-64MiB-1066MHz'
+          - 'DDR2-W971GG6KB25-128MiB-800MHz'
+          - 'DDR2-W971GG6KB18-128MiB-1066MHz'
+          - 'DDR3-128MiB'
+          - 'DDR3-256MiB'
+          - 'DDR3-512MiB'
+          - 'DDR3-128MiB-KGD'
       oldparam:
         description: 'Use Old DDR Timing Parameters'
         required: true
         type: boolean
-        default: 'false'
+        default: false
       baudrate:
         description: 'Baud Rate'
         required: true
         type: choice
-        options:
-        - '57600'
-        - '115200'
+        options: ['57600', '115200']
 
 jobs:
   build:
     name: Build MT7621 u-boot
-    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:18.04
     strategy:
-       fail-fast: False
+      fail-fast: false
 
     steps:
-      - name: Checkout master directory
+      - name: Install dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            build-essential git python2.7 python2.7-dev swig wget tar xz-utils
+
+          ln -sf /usr/bin/python2.7 /usr/bin/python
+          ln -sf /usr/include/python2.7 /usr/include/python
+
+      - name: Checkout source
         uses: actions/checkout@v4
         with:
           path: uboot-mt7621
-
-      - name: Install essential packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install swig python-dev-is-python3
-          echo 'switch to python2 as default'Add commentMore actions          
-          sudo ln -s /usr/bin/python /usr/bin/python2
-         
 
       - name: Download OpenWrt toolchain
         run: |
@@ -108,7 +101,7 @@ jobs:
         working-directory: uboot-mt7621
         run: |
           ./customize.sh '${{ inputs.flash }}' '${{ inputs.mtdparts }}' '${{ inputs.kernel_offset }}' '${{ inputs.reset_pin }}' \
-            '${{ inputs.sysled_pin }}' '${{ inputs.cpufreq }}' '${{ inputs.ramfreq }}' '${{ inputs.ddrparam }}' '${{ inputs.baudrate }}' 2>&1
+            '${{ inputs.sysled_pin }}' '${{ inputs.cpufreq }}' '${{ inputs.ramfreq }}' '${{ inputs.ddrparam }}' '${{ inputs.baudrate }}'
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
