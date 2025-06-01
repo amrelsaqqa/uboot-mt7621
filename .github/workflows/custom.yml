@@ -90,6 +90,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install swig python-dev-is-python3
+          echo 'switch to python2 as default'Add commentMore actions          
+          sudo ln -s /usr/bin/python /usr/bin/python2
          
 
       - name: Download OpenWrt toolchain
